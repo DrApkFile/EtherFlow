@@ -26,10 +26,8 @@ export default function TransactionHistory({ address }: { address: string }) {
 
       try {
         setIsLoading(true)
-        // In a real app, you would use an API like Etherscan or Alchemy
-        // This is a placeholder for demonstration
         const response = await fetch(
-          `https://api.etherscan.io/api?module=account&action=txlist&address=${address}&startblock=0&endblock=99999999&sort=desc&apikey=YourApiKeyToken`,
+          `https://api.etherscan.io/api?module=account&action=txlist&address=${address}&startblock=0&endblock=99999999&sort=desc&apikey=${process.env.NEXT_PUBLIC_ETHERSCAN_API_KEY}`,
         )
 
         if (!response.ok) {
@@ -49,32 +47,7 @@ export default function TransactionHistory({ address }: { address: string }) {
 
           setTransactions(formattedTransactions)
         } else {
-          // For demo purposes, create some mock transactions
-          const mockTransactions = Array(5)
-            .fill(0)
-            .map((_, i) => ({
-              hash: `0x${Array(64)
-                .fill(0)
-                .map(() => Math.floor(Math.random() * 16).toString(16))
-                .join("")}`,
-              from:
-                i % 2 === 0
-                  ? address
-                  : `0x${Array(40)
-                      .fill(0)
-                      .map(() => Math.floor(Math.random() * 16).toString(16))
-                      .join("")}`,
-              to:
-                i % 2 === 0
-                  ? `0x${Array(40)
-                      .fill(0)
-                      .map(() => Math.floor(Math.random() * 16).toString(16))
-                      .join("")}`
-                  : address,
-              value: (Math.random() * 0.1).toFixed(4),
-              timestamp: Date.now() - i * 86400000,
-            }))
-          setTransactions(mockTransactions)
+          setTransactions([])
         }
       } catch (error: any) {
         toast({
@@ -82,32 +55,7 @@ export default function TransactionHistory({ address }: { address: string }) {
           description: error.message || "Failed to fetch transaction history",
           variant: "destructive",
         })
-        // Set mock data for demonstration
-        const mockTransactions = Array(5)
-          .fill(0)
-          .map((_, i) => ({
-            hash: `0x${Array(64)
-              .fill(0)
-              .map(() => Math.floor(Math.random() * 16).toString(16))
-              .join("")}`,
-            from:
-              i % 2 === 0
-                ? address
-                : `0x${Array(40)
-                    .fill(0)
-                    .map(() => Math.floor(Math.random() * 16).toString(16))
-                    .join("")}`,
-            to:
-              i % 2 === 0
-                ? `0x${Array(40)
-                    .fill(0)
-                    .map(() => Math.floor(Math.random() * 16).toString(16))
-                    .join("")}`
-                : address,
-            value: (Math.random() * 0.1).toFixed(4),
-            timestamp: Date.now() - i * 86400000,
-          }))
-        setTransactions(mockTransactions)
+        setTransactions([])
       } finally {
         setIsLoading(false)
       }
@@ -140,7 +88,7 @@ export default function TransactionHistory({ address }: { address: string }) {
   }
 
   if (transactions.length === 0) {
-    return <p className="text-center py-4">No transactions found</p>
+    return <p className="text-center py-4">No transactions found at the moment</p>
   }
 
   return (
@@ -174,7 +122,9 @@ export default function TransactionHistory({ address }: { address: string }) {
               <div>
                 <span className="font-medium">To:</span>{" "}
                 <span className="truncate max-w-[150px] inline-block align-bottom" title={tx.to}>
-                  {tx.to === address ? "You" : `${tx.to.substring(0, 6)}...${tx.to.substring(tx.to.length - 4)}`}
+                  {tx.to === address
+                    ? "You"
+                    : `${tx.to.substring(0, 6)}...${tx.to.substring(tx.to.length - 4)}`}
                 </span>
               </div>
               <div>
@@ -187,4 +137,3 @@ export default function TransactionHistory({ address }: { address: string }) {
     </div>
   )
 }
-
