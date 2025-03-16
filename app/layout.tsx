@@ -7,8 +7,7 @@ import { AuthProvider } from "@/context/auth-context"
 import { Toaster } from "@/components/ui/toaster"
 import Navbar from "@/components/navbar"
 import EnvCheck from "./env-check"
-import FirebaseStatus from "@/components/firebase-status"
-import FirestoreStatus from "@/components/firestore-status"
+
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -33,8 +32,6 @@ export default function RootLayout({
                 <Navbar />
                 <main className="flex-1">
                   <EnvCheck />
-                  <FirebaseStatus />
-                  <FirestoreStatus />
                   {children}
                 </main>
               </div>
