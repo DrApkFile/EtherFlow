@@ -10,12 +10,14 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useToast } from "@/hooks/use-toast"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Wallet, ArrowUpRight, History, RefreshCw, User } from "lucide-react"
+import { Wallet, ArrowUpRight, History, RefreshCw, User, ArrowDownUp } from "lucide-react"
 import TransactionHistory from "@/components/transaction-history"
 import WalletConnect from "@/components/wallet-connect"
 import { useWeb3 } from "@/context/web3-context"
 import { useAuth } from "@/context/auth-context"
 import Link from "next/link"
+import GasTracker from "@/components/gas-tracker"
+import TokenSwap from "@/components/token-swap"
 
 export default function Dashboard() {
   const { toast } = useToast()
@@ -67,6 +69,7 @@ export default function Dashboard() {
 
     try {
       setIsLoading(true)
+      console.log("Sending transaction to", recipient, "with amount", amount)
       await sendTransaction(recipient, amount)
       setRecipient("")
       setAmount("")
@@ -75,6 +78,7 @@ export default function Dashboard() {
         description: "Transaction sent successfully",
       })
     } catch (error: any) {
+      console.error("Transaction error in dashboard:", error)
       toast({
         title: "Error",
         description: error.message || "Failed to send transaction",
@@ -137,6 +141,11 @@ export default function Dashboard() {
         </div>
       </div>
 
+      {/* Gas Tracker */}
+      <div className="mb-8">
+        <GasTracker />
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -177,10 +186,14 @@ export default function Dashboard() {
       </div>
 
       <Tabs defaultValue="send" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="send">
             <ArrowUpRight className="mr-2 h-4 w-4" />
             Send ETH
+          </TabsTrigger>
+          <TabsTrigger value="swap">
+            <ArrowDownUp className="mr-2 h-4 w-4" />
+            Swap Tokens
           </TabsTrigger>
           <TabsTrigger value="history">
             <History className="mr-2 h-4 w-4" />
@@ -224,6 +237,9 @@ export default function Dashboard() {
               </CardFooter>
             </form>
           </Card>
+        </TabsContent>
+        <TabsContent value="swap">
+          <TokenSwap />
         </TabsContent>
         <TabsContent value="history">
           <Card>
